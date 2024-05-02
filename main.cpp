@@ -101,7 +101,7 @@ vector<State> get_neighbors(const State& state) {
 vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
     priority_queue<State> frontier;  // priority queue for UCS
     unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
-
+    
     // initialize the initial state
     State initial;
     initial.board = initial_board;
@@ -144,24 +144,116 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
     return {};
 }
 
-int main() {
-
-    vector<vector<int>> initial_board = {
-        {6, 8, 4},
-        {3, 7, 1},
-        {5, 0, 2}
+void UCS(const vector<vector<int>>& initial_board) {
+    vector<vector<int>> goal_state_board = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
     };
-
-    auto path = uniform_cost_search(initial_board);
-
-    if (!path.empty()) {
-        cout << "Solution found! Steps: ";
-        for (const auto& step : path) {
-            cout << step << " ";
+    
+    if(initial_board == goal_state_board) {
+        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+    }
+    else {
+        auto path = uniform_cost_search(initial_board);
+    
+        int count = 0;
+        if (!path.empty()) {
+            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            for (const auto& step : path) {
+                cout << step << " ";
+                ++count;
+            }
+            cout << endl;
+            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+        } else {
+            cout << "No solution found." << endl;
         }
-        cout << endl;
-    } else {
-        cout << "No solution found." << endl;
+    }   
+}
+
+int main() {
+    cout << "Welcome to Our 8-puzzle solver" << "\n";
+    cout << "Type 1 to use the Default 8-puzzle, or Type 2 to enter your own 8-puzzle" << "\n";
+
+    int choice = 0;
+
+    cin >> choice;
+
+    if(choice == 1) {
+        choice = 0;
+        vector<vector<int>> initial_state_board = {
+            {1, 0, 3},
+            {4, 2, 6},
+            {7, 5, 8}
+        };
+
+        cout << "Choose the algorithm to use:" << "\n";
+        cout << "(1) Uniform Cost Search" << "\n";
+        cout << "(2) A* search with the Misplaced Tile heuristic" << "\n";
+        cout << "(3) A* search with the Euclidean distance heuristic" << "\n";
+        
+        cin >> choice;
+        
+        if(choice == 1) {
+            UCS(initial_state_board);
+        }
+    }
+    else if (choice == 2) {
+        vector<vector<int>> initial_state_board;
+        int one, two, three = 0;
+        
+        cout << "Enter your puzzle, use a zero to represent the blank" << "\n";
+        cout << "Enter the first row, use space or tabs between numbers ";
+        
+        cin >> one >> two >> three;
+        vector<int> row1;
+        row1.push_back(one);
+        row1.push_back(two);
+        row1.push_back(three);
+        
+        cout << "\n";
+        cout << "Enter the second row, use space or tabs between numbers ";
+
+        cin >> one >> two >> three;
+        vector<int> row2;
+        row2.push_back(one);
+        row2.push_back(two);
+        row2.push_back(three);
+
+        cout << "\n";
+        cout << "Enter the third row, use space or tabs between numbers ";
+
+        cin >> one >> two >> three;
+        vector<int> row3;
+        row3.push_back(one);
+        row3.push_back(two);
+        row3.push_back(three);
+        cout << "\n";
+
+        initial_state_board.push_back(row1);
+        initial_state_board.push_back(row2);
+        initial_state_board.push_back(row3);
+
+        for (int i = 0; i < initial_state_board.size(); i++) { 
+            for (int j = 0; j < initial_state_board[i].size(); j++) {
+                cout << initial_state_board[i][j] << " "; 
+            }
+            cout << endl; 
+        }
+        cout << "\n";
+
+        cout << "Choose the algorithm to use:" << "\n";
+        cout << "(1) Uniform Cost Search" << "\n";
+        cout << "(2) A* search with the Misplaced Tile heuristic" << "\n";
+        cout << "(3) A* search with the Euclidean distance heuristic" << "\n";
+        
+        cin >> choice;
+        
+        if(choice == 1) {
+            UCS(initial_state_board);
+        }
     }
 
     return 0;
