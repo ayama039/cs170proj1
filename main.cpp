@@ -42,9 +42,9 @@ struct BoardHash {
 
 // state representation
 struct State {
-    vector<vector<int>> board;
+    vector<vector<int>> board; // The actual 8-puzzle Board
     int zero_row, zero_col;
-    int cost;
+    int cost; // Records how many moves it takes to reach final State
     vector<string> path;  // directions taken to reach this state
 
     bool operator<(const State& other) const {
@@ -53,8 +53,8 @@ struct State {
 };
 
 
-bool is_goal(vector<vector<int>>& board)
-{
+bool is_goal(vector<vector<int>>& board) { //Checks if the current state of the board is equal to the Goal State
+
     vector<vector<int>> goal = 
     {
         {1, 2, 3},
@@ -66,12 +66,12 @@ bool is_goal(vector<vector<int>>& board)
 }
 
 
-vector<State> get_neighbors(const State& state) {
+vector<State> get_neighbors(const State& state) { //Creates the different possible boards after each current state
     vector<State> neighbors;
     int row = state.zero_row;
     int col = state.zero_col;
 
-    vector<tuple<int, int, string>> moves = {
+    vector<tuple<int, int, string>> moves = {  //Possible moves for the 8-puzzle board 
         {-1, 0, "Up"},
         {1, 0, "Down"},
         {0, -1, "Left"},
@@ -89,7 +89,7 @@ vector<State> get_neighbors(const State& state) {
             new_state.zero_row = new_row;
             new_state.zero_col = new_col;
             new_state.path.push_back(get<2>(move));
-            new_state.cost++;
+            new_state.cost++; 
             neighbors.push_back(new_state);
         }
     }
@@ -101,7 +101,7 @@ vector<State> get_neighbors(const State& state) {
 vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
     priority_queue<State> frontier;  // priority queue for UCS
     unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
-    
+    int count = 1;
     // initialize the initial state
     State initial;
     initial.board = initial_board;
@@ -125,13 +125,29 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
 
         // if the goal is reached, return the path
         if (is_goal(current.board)) {
+            /*Displays Goal State Board*/
+            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
             return current.path;
         }
 
         // if not visited, add to visited set and explore neighbors
         if (visited.find(current.board) == visited.end()) {
             visited.insert(current.board);
-
+            /*Below displays every possible board created to reach goal state*/
+            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
+            ++count;
             auto neighbors = get_neighbors(current);
             for (const auto& neighbor : neighbors) {
                 if (visited.find(neighbor.board) == visited.end()) {
