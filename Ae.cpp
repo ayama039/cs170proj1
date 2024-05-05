@@ -124,6 +124,19 @@ int euclidean (const State& state){
     State goal;
     goal.board = g_board;
     goal.cost = 0;
+    double distance = 0;
+    int n = state.board.size();
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (state.board[i][j] != 0) {
+                int goal_i = (state.board[i][j] - 1) / n;
+                int goal_j = (state.board[i][j] - 1) % n;
+                distance += sqrt(pow(i - goal_i, 2) + pow(j - goal_j, 2));
+            }
+        }
+    }
+    return distance;
 }
 
 
