@@ -574,11 +574,11 @@ int main() {
         }
 
         if (choice == 2) {
-            misplace_tile_search(initial_state_board);
+            misplaced(initial_state_board);
         }
 
         if (choice == 3) {
-            euclidean_distance_search(initial_state_board);
+            euclidean(initial_state_board);
         }
     }
 
