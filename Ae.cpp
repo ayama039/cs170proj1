@@ -99,10 +99,31 @@ vector<State> get_neighbors(const State& state) {
             // cout << "new state cost: " << new_state.cost << endl;
 
             neighbors.push_back(new_state);
+            for (int i = 0; i < new_state.board.size(); i ++) {
+                cout << "row" << i << ": ";
+                for (int j= 0; j < new_state.board[i].size(); j++) {
+                    cout << new_state.board[i][j] << " ";
+                }
+                cout << endl;
+            }
+            cout << endl << endl;
+           
         }
     }
-
+     
     return neighbors;
+}
+
+int euclidean (const State& state){
+    vector<vector<int>> g_board = 
+    {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
+    };
+    State goal;
+    goal.board = g_board;
+    goal.cost = 0;
 }
 
 
@@ -118,8 +139,8 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
     // find the position of zero
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            cout << "UCS i: " << i << endl;
-            cout << "UCS j: " << j << endl;
+            // cout << "UCS i: " << i << endl;
+            // cout << "UCS j: " << j << endl;
             if (initial.board[i][j] == 0) {
                 initial.zero_row = i;
                 initial.zero_col = j;
