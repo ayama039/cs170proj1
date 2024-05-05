@@ -66,6 +66,31 @@ bool is_goal(vector<vector<int>>& board)
 }
 
 
+int total_misplaced_tiles(const State& state)
+{
+    State curr_state = state;
+    vector<vector<int>> goal = 
+    {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
+    };
+    int heuristic_total = 0;
+    int i = 0;
+    int j = 0;
+    while (j < 3) {
+        i = 0;
+        while (i < 3) {
+            if (curr_state.board[i][j] != goal[i][j]) {
+            heuristic_total++;
+            }
+            i++;
+        }
+        j++;
+    }
+    return heuristic_total;
+}
+
 vector<State> get_neighbors(const State& state) {
     vector<State> neighbors;
     int row = state.zero_row;
