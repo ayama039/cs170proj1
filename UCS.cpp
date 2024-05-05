@@ -269,7 +269,7 @@ vector <State> get_misplaced_neighbors(const State& state) { //finds the differe
             new_state.zero_col = new_col;
             new_state.path.push_back(get<2>(move));
             g_n++;
-            h_n = total_misplaced_tiles(state);
+            h_n = total_misplaced_tiles(state) - 1;
             new_state.cost = g_n + h_n;
             neighbors.push_back(new_state);
         }
