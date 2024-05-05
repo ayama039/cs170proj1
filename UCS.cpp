@@ -9,6 +9,8 @@
 
 using namespace std;
 
+//ALL STANDARD PREP THINGS
+
 class Tree {
     struct Node {
         Node *left;
@@ -65,7 +67,7 @@ bool is_goal(vector<vector<int>>& board) { //Checks if the current state of the 
     return board == goal;
 }
 
-
+//START OF UCS CODE
 vector<State> get_neighbors(const State& state) { //Creates the different possible boards after each current state
     vector<State> neighbors;
     int row = state.zero_row;
@@ -97,8 +99,7 @@ vector<State> get_neighbors(const State& state) { //Creates the different possib
     return neighbors;
 }
 
-
-vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
+vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { //frontier and implementation of ucs algo
     priority_queue<State> frontier;  // priority queue for UCS
     unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
     int count = 1;
@@ -160,7 +161,7 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) {
     return {};
 }
 
-void UCS(const vector<vector<int>>& initial_board) {
+void UCS(const vector<vector<int>>& initial_board) { //says whether to solution is found or not. if found it prints the trace
     vector<vector<int>> goal_state_board = {
         {1, 2, 3},
         {4, 5, 6},
@@ -188,6 +189,300 @@ void UCS(const vector<vector<int>>& initial_board) {
         }
     }   
 }
+// END OF UCS CODE
+
+
+//START OF A* EXLUSIVE CODE
+priority_queue<State> frontier_init(const vector<vector<int>>& initial_board) { //creates the frontier queue (A* exclusive)
+    priority_queue<State> frontier;  // priority queue for UCS
+
+    // initialize the initial state
+    State initial;
+    initial.board = initial_board;
+    initial.cost = 0;
+
+    // find the position of zero
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (initial.board[i][j] == 0) {
+                initial.zero_row = i;
+                initial.zero_col = j;
+            }
+        }
+    }
+
+    frontier.push(initial);
+    return frontier;
+}
+//END OF A* EXCLUSIVE CODE
+
+
+// START OF MISPLACED -- DOUBLE CHECK TO MATCH SOLUTIONS
+
+int total_misplaced_tiles(const State& state) { // calculation for the misplaced tiles
+    State curr_state = state;
+    vector<vector<int>> goal = 
+    {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
+    };
+    int heuristic_total = 0;
+    int i = 0;
+    int j = 0;
+    while (j < 3) {
+        i = 0;
+        while (i < 3) {
+            if (curr_state.board[i][j] != goal[i][j]) {
+            heuristic_total++;
+            }
+            i++;
+        }
+        j++;
+    }
+    return heuristic_total;
+}
+
+vector <State> get_misplaced_neighbors(const State& state) { //finds the different possible boards of each current state
+    vector<State> neighbors;
+    int row = state.zero_row;
+    int col = state.zero_col;
+    int g_n = state.cost;
+    int h_n = 0;
+
+    vector<tuple<int, int, string>> moves = {
+        {-1, 0, "Up"},
+        {1, 0, "Down"},
+        {0, -1, "Left"},
+        {0, 1, "Right"}
+    };
+
+    for (const auto& move : moves) {
+        int new_row = row + get<0>(move);
+        int new_col = col + get<1>(move);
+
+        if (new_row >= 0 && new_row < 3 && new_col >= 0 && new_col < 3) {
+            State new_state = state;
+            new_state.board[row][col] = new_state.board[new_row][new_col];
+            new_state.board[new_row][new_col] = 0;
+            new_state.zero_row = new_row;
+            new_state.zero_col = new_col;
+            new_state.path.push_back(get<2>(move));
+            g_n++;
+            h_n = total_misplaced_tiles(state);
+            new_state.cost = g_n + h_n;
+            neighbors.push_back(new_state);
+        }
+    }
+
+    return neighbors;
+}
+
+vector<string> misplace_tile_search(const vector<vector<int>>& initial_board) { // says whether it found the solution or not. if so print trace
+    unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
+    priority_queue<State> frontier = frontier_init(initial_board);
+    int count = 1;
+
+    while (!frontier.empty()) {
+        State current = frontier.top();
+        frontier.pop();
+
+        // if the goal is reached, return the path
+        if (is_goal(current.board)) {
+            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
+            return current.path;
+        }
+
+        // if not visited, add to visited set and explore neighbors
+        if (visited.find(current.board) == visited.end()) {
+            visited.insert(current.board);
+            
+            cout << "Board " << count << " with cost: " << current.cost << "\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
+            ++count;
+            auto neighbors = get_misplaced_neighbors(current);
+            for (const auto& neighbor : neighbors) {
+                if (visited.find(neighbor.board) == visited.end()) {
+                    frontier.push(neighbor);
+                }
+            }
+        }
+    }
+
+    return {};
+}
+
+void misplaced(const vector<vector<int>>& initial_board) { //says whether to solution is found or not. if found it prints the trace
+    vector<vector<int>> goal_state_board = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
+    };
+    
+    if(initial_board == goal_state_board) {
+        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+    }
+    else {
+        auto path = misplace_tile_search(initial_board);
+    
+        int count = 0;
+        if (!path.empty()) {
+            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            for (const auto& step : path) {
+                cout << step << " ";
+                ++count;
+            }
+            cout << endl;
+            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+        } else {
+            cout << "No solution found." << endl;
+        }
+    }   
+}
+
+//END OF MISPLACED
+
+
+
+
+//START OF EUCLIDEANS --DOUBLE CHECK TO MATCH SOLUTIONS
+
+int euclidean_calc (const State& state){ //calculation for euclidean
+    double distance = 0;
+    int n = state.board.size();
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (state.board[i][j] != 0) {
+                int goal_i = (state.board[i][j] - 1) / n;
+                int goal_j = (state.board[i][j] - 1) % n;
+                distance += sqrt(pow(i - goal_i, 2) + pow(j - goal_j, 2));
+            }
+        }
+    }
+    return distance;
+}
+
+vector<State> get_euclidean_neighbors(const State& state) { //finds the different possible boards of each current state
+    vector<State> neighbors;
+    int row = state.zero_row;
+    int col = state.zero_col;
+    int g_n = state.cost;
+    int h_n = 0;
+
+    vector<tuple<int, int, string>> moves = {
+        {-1, 0, "Up"},
+        {1, 0, "Down"},
+        {0, -1, "Left"},
+        {0, 1, "Right"}
+    };
+
+    for (const auto& move : moves) {
+        int new_row = row + get<0>(move);
+        int new_col = col + get<1>(move);
+
+        if (new_row >= 0 && new_row < 3 && new_col >= 0 && new_col < 3) {
+            State new_state = state;
+            new_state.board[row][col] = new_state.board[new_row][new_col];
+            new_state.board[new_row][new_col] = 0;
+            new_state.zero_row = new_row;
+            new_state.zero_col = new_col;
+            new_state.path.push_back(get<2>(move));
+            g_n++;
+            h_n = euclidean_calc(state);
+            new_state.cost = g_n + h_n;
+            
+            neighbors.push_back(new_state);
+        }
+    }
+     
+    return neighbors;
+}
+
+vector<string> euclidean_distance_search(const vector<vector<int>>& initial_board) { //says whether it found the solution or not. if so print trace
+    unordered_set<vector<vector<int>>, BoardHash> visited;
+    priority_queue<State> frontier = frontier_init(initial_board);
+    int count = 1;
+
+    while(!frontier.empty()) {
+        State current = frontier.top();
+        frontier.pop();
+
+        if(is_goal(current.board)) {
+            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
+            return current.path;
+        }
+
+        if (visited.find(current.board) == visited.end()) {
+            visited.insert(current.board);
+            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            for (int i = 0; i < current.board.size(); i++) { 
+                for (int j = 0; j < current.board[i].size(); j++) {
+                    cout << current.board[i][j] << " "; 
+                }
+                cout << endl; 
+            }
+            ++count;
+            auto neighbors = get_euclidean_neighbors(current);
+            for(const auto& neighbor : neighbors) {
+                if(visited.find(neighbor.board) == visited.end()){
+                    frontier.push(neighbor);
+                }
+            }
+        }
+    }
+    return {};
+
+}
+
+void euclidean(const vector<vector<int>>& initial_board) { //says whether to solution is found or not. if found it prints the trace
+    vector<vector<int>> goal_state_board = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 0}
+    };
+    
+    if(initial_board == goal_state_board) {
+        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+    }
+    else {
+        auto path = euclidean_distance_search(initial_board);
+    
+        int count = 0;
+        if (!path.empty()) {
+            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            for (const auto& step : path) {
+                cout << step << " ";
+                ++count;
+            }
+            cout << endl;
+            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+        } else {
+            cout << "No solution found." << endl;
+        }
+    }   
+}
+
+//END OF EUCLIDEANS
 
 int main() {
     cout << "Welcome to Our 8-puzzle solver" << "\n";
@@ -214,6 +509,13 @@ int main() {
         
         if(choice == 1) {
             UCS(initial_state_board);
+        }
+        if (choice == 2) {
+            misplaced(initial_state_board);
+        }
+
+        if (choice == 3) {
+            euclidean(initial_state_board);
         }
     }
     else if (choice == 2) {
@@ -269,6 +571,14 @@ int main() {
         
         if(choice == 1) {
             UCS(initial_state_board);
+        }
+
+        if (choice == 2) {
+            misplace_tile_search(initial_state_board);
+        }
+
+        if (choice == 3) {
+            euclidean_distance_search(initial_state_board);
         }
     }
 
