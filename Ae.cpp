@@ -66,15 +66,15 @@ bool is_goal(vector<vector<int>>& board)
 }
 
 int euclidean (const State& state){
-    vector<vector<int>> g_board = 
-    {
-        {1, 2, 3},
-        {4, 5, 6},
-        {7, 8, 0}
-    };
-    State goal;
-    goal.board = g_board;
-    goal.cost = 0;
+    // vector<vector<int>> g_board = 
+    // {
+    //     {1, 2, 3},
+    //     {4, 5, 6},
+    //     {7, 8, 0}
+    // };
+    // State goal;
+    // goal.board = g_board;
+    // goal.cost = 0;
     double distance = 0;
     int n = state.board.size();
 
