@@ -46,7 +46,9 @@ struct BoardHash {
 struct State {
     vector<vector<int>> board; // The actual 8-puzzle Board
     int zero_row, zero_col;
-    int cost; // Records how many moves it takes to reach final State
+    int g_n = 0; // cost of each step
+    int h_n = 0; // cost of heuristic
+    int cost = g_n + h_n;
     vector<string> path;  // directions taken to reach this state
 
     bool operator<(const State& other) const {
@@ -91,7 +93,7 @@ vector<State> get_neighbors(const State& state) { //Creates the different possib
             new_state.zero_row = new_row;
             new_state.zero_col = new_col;
             new_state.path.push_back(get<2>(move));
-            new_state.cost++; 
+            new_state.g_n++; 
             neighbors.push_back(new_state);
         }
     }
@@ -103,10 +105,11 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { /
     priority_queue<State> frontier;  // priority queue for UCS
     unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
     int count = 1;
+    int max_frontier = frontier.size();
     // initialize the initial state
     State initial;
     initial.board = initial_board;
-    initial.cost = 0;
+    initial.g_n = 0;
 
     // find the position of zero
     for (int i = 0; i < 3; i++) {
@@ -121,19 +124,23 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { /
     frontier.push(initial);
 
     while (!frontier.empty()) {
+        if (max_frontier < frontier.size()) {
+        max_frontier = frontier.size();
+        }
         State current = frontier.top();
         frontier.pop();
 
         // if the goal is reached, return the path
         if (is_goal(current.board)) {
             /*Displays Goal State Board*/
-            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
                 }
                 cout << endl; 
             }
+            cout << "The maximum number of nodes in the queue at any one time: " << max_frontier << endl;
             return current.path;
         }
 
@@ -141,7 +148,7 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { /
         if (visited.find(current.board) == visited.end()) {
             visited.insert(current.board);
             /*Below displays every possible board created to reach goal state*/
-            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
@@ -282,20 +289,25 @@ vector<string> misplace_tile_search(const vector<vector<int>>& initial_board) { 
     unordered_set<vector<vector<int>>, BoardHash> visited;  // visited states
     priority_queue<State> frontier = frontier_init(initial_board);
     int count = 1;
+    int max_frontier = frontier.size();
 
     while (!frontier.empty()) {
+        if (max_frontier < frontier.size()) {
+        max_frontier = frontier.size();
+        }
         State current = frontier.top();
         frontier.pop();
 
         // if the goal is reached, return the path
         if (is_goal(current.board)) {
-            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
                 }
                 cout << endl; 
             }
+            cout << "The maximum number of nodes in the queue at any one time: " << max_frontier << endl;
             return current.path;
         }
 
@@ -303,7 +315,7 @@ vector<string> misplace_tile_search(const vector<vector<int>>& initial_board) { 
         if (visited.find(current.board) == visited.end()) {
             visited.insert(current.board);
             
-            cout << "Board " << count << " with cost: " << current.cost << "\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
@@ -415,25 +427,30 @@ vector<string> euclidean_distance_search(const vector<vector<int>>& initial_boar
     unordered_set<vector<vector<int>>, BoardHash> visited;
     priority_queue<State> frontier = frontier_init(initial_board);
     int count = 1;
-
+    int max_frontier = frontier.size();
     while(!frontier.empty()) {
+        if (max_frontier < frontier.size()) {
+            max_frontier = frontier.size();
+        }
         State current = frontier.top();
         frontier.pop();
 
         if(is_goal(current.board)) {
-            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
                 }
                 cout << endl; 
             }
+                cout << "The maximum number of nodes in the queue at any one time: " << max_frontier << endl;
+
             return current.path;
         }
 
         if (visited.find(current.board) == visited.end()) {
             visited.insert(current.board);
-            cout << "Board " << count << " with cost: " << current.cost <<"\n";
+            cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
             for (int i = 0; i < current.board.size(); i++) { 
                 for (int j = 0; j < current.board[i].size(); j++) {
                     cout << current.board[i][j] << " "; 
