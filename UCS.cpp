@@ -176,21 +176,21 @@ void UCS(const vector<vector<int>>& initial_board) { //says whether to solution 
     };
     
     if(initial_board == goal_state_board) {
-        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
-        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+        cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "The depth of the goal node was 1" << "\n";
     }
     else {
         auto path = uniform_cost_search(initial_board);
     
         int count = 0;
         if (!path.empty()) {
-            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: ";
             for (const auto& step : path) {
                 cout << step << " ";
                 ++count;
             }
             cout << endl;
-            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+            cout << "The depth of the goal node was " << count << "\n";
         } else {
             cout << "No solution found." << endl;
         }
@@ -343,21 +343,21 @@ void misplaced(const vector<vector<int>>& initial_board) { //says whether to sol
     };
     
     if(initial_board == goal_state_board) {
-        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
-        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+        cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "The depth of the goal node was 1" << "\n";
     }
     else {
         auto path = misplace_tile_search(initial_board);
     
         int count = 0;
         if (!path.empty()) {
-            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: ";
             for (const auto& step : path) {
                 cout << step << " ";
                 ++count;
             }
             cout << endl;
-            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+            cout << "The depth of the goal node was " << count << "\n";
         } else {
             cout << "No solution found." << endl;
         }
@@ -478,21 +478,21 @@ void euclidean(const vector<vector<int>>& initial_board) { //says whether to sol
     };
     
     if(initial_board == goal_state_board) {
-        cout << "Solution found!" << "\n" << "The path of Steps taken: none" << "\n";
-        cout << "Numnber of steps taken to reach Goal state: 1" << "\n";
+        cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: none" << "\n";
+        cout << "The depth of the goal node was 1" << "\n";
     }
     else {
         auto path = euclidean_distance_search(initial_board);
     
         int count = 0;
         if (!path.empty()) {
-            cout << "Solution found!" << "\n" << "The path of Steps taken: ";
+            cout << "\n" << "Goal!!!" << "\n" << "\n" << "The path of Steps taken: ";
             for (const auto& step : path) {
                 cout << step << " ";
                 ++count;
             }
             cout << endl;
-            cout << "Numnber of steps taken to reach Goal state: " << count << "\n";
+            cout << "The depth of the goal node was " << count << "\n";
         } else {
             cout << "No solution found." << endl;
         }
