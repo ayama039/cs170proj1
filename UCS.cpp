@@ -97,7 +97,7 @@ vector<State> get_neighbors(const State& state) { //Creates the different possib
             neighbors.push_back(new_state);
         }
     }
-
+    cout << "SIZE OF THE NEIGHBORS:::::::::::: " << neighbors.size() << endl << endl;
     return neighbors;
 }
 
@@ -124,9 +124,6 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { /
     frontier.push(initial);
 
     while (!frontier.empty()) {
-        if (max_frontier < frontier.size()) {
-        max_frontier = frontier.size();
-        }
         State current = frontier.top();
         frontier.pop();
 
@@ -162,6 +159,10 @@ vector<string> uniform_cost_search(const vector<vector<int>>& initial_board) { /
                     frontier.push(neighbor);
                 }
             }
+        }
+        cout << "frontier size = " << frontier.size() << endl;
+        if (max_frontier < frontier.size()) {
+            max_frontier = frontier.size();
         }
     }
 
@@ -254,7 +255,7 @@ vector <State> get_misplaced_neighbors(const State& state) { //finds the differe
     vector<State> neighbors;
     int row = state.zero_row;
     int col = state.zero_col;
-    int g_n = state.cost;
+    int g_n = state.g_n;
     int h_n = 0;
 
     vector<tuple<int, int, string>> moves = {
@@ -277,6 +278,8 @@ vector <State> get_misplaced_neighbors(const State& state) { //finds the differe
             new_state.path.push_back(get<2>(move));
             g_n++;
             h_n = total_misplaced_tiles(state) - 1;
+            new_state.g_n = g_n;
+            new_state.h_n = h_n;
             new_state.cost = g_n + h_n;
             neighbors.push_back(new_state);
         }
@@ -292,11 +295,11 @@ vector<string> misplace_tile_search(const vector<vector<int>>& initial_board) { 
     int max_frontier = frontier.size();
 
     while (!frontier.empty()) {
+        State current = frontier.top();
+        frontier.pop();
         if (max_frontier < frontier.size()) {
         max_frontier = frontier.size();
         }
-        State current = frontier.top();
-        frontier.pop();
 
         // if the goal is reached, return the path
         if (is_goal(current.board)) {
@@ -414,6 +417,8 @@ vector<State> get_euclidean_neighbors(const State& state) { //finds the differen
             new_state.path.push_back(get<2>(move));
             g_n++;
             h_n = euclidean_calc(state);
+            new_state.g_n = g_n;
+            new_state.h_n = h_n;
             new_state.cost = g_n + h_n;
             
             neighbors.push_back(new_state);
@@ -429,11 +434,11 @@ vector<string> euclidean_distance_search(const vector<vector<int>>& initial_boar
     int count = 1;
     int max_frontier = frontier.size();
     while(!frontier.empty()) {
+        State current = frontier.top();
+        frontier.pop();
         if (max_frontier < frontier.size()) {
             max_frontier = frontier.size();
         }
-        State current = frontier.top();
-        frontier.pop();
 
         if(is_goal(current.board)) {
             cout << "The best state to expand " << count << " with g(n)= " << current.g_n << " and h(n)= " << current.h_n << "\n";
