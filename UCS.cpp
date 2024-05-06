@@ -97,7 +97,6 @@ vector<State> get_neighbors(const State& state) { //Creates the different possib
             neighbors.push_back(new_state);
         }
     }
-    cout << "SIZE OF THE NEIGHBORS:::::::::::: " << neighbors.size() << endl << endl;
     return neighbors;
 }
 
